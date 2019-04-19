@@ -1,0 +1,266 @@
+*Mobile security*narrative
+
+Threats
+    Apps perform network communication, which can occur through unsecure networks such as cafe wifi.
+    The phone can be lost or stolen, no app data should be available in the filesystem
+    Unofficial markets provide malware threats
+    Big attack surface (NFC, bluetooth, camera, SMS, USB, QR, ...)
+
+Common vulnerabilities
+    Insecure data storage: data in cleartext, hardcoded keys, or other means that can be reversed engineered.
+    Insecure transmission of data: not using TLS or implemented incorrectly
+    Lack of binary protections: No having protections against debugging, tampering, reverse engineering.
+    Client-side injection: untrusted data in handled in an unsafe manner
+    Hard-coded passwords: in the app code or data.
+    Leakage of sensitive data: leaking data through OS or frameworks.
+
+Mobile OWASP top 10
+    M1 - Improper platform usage
+    M3 - Insufficient Transport Layer (on server side)
+    M2 - Insecure Data storage
+    M4 - Insecure Authentication
+    M5 - Insufficient Cryptography
+    M6 - Insecure Authorization
+    M8 - Code Tampering
+    M9 -Reverse Engineering
+    M10 - Extraneous Functionality
+
+App Taxonomy
+    Native: developed using the SDK of android or IOs
+    Web: HTML5, run in the browser
+    Hybrid: web view(html5 on steroids, HTML5 with some OS functions) (react native, jquery mobile, ...)
+
+Mobile pentest
+    Whitebox
+    Blackbox
+
+If white/gray:
+    Static analysis
+        auomatic code (SAST)
+        manual review
+
+Dynamic analysis
+    Mapping the app: use the app, entry points, data flows, functions
+    Exploit
+    Report
+
+    Identify sensitive data (rest(datastore), in use, in transit_
+
+
+Env
+    Android SDK and testing on a rooted device
+    set up burp with the CA installed on the phone, certificate pinning killed.
+
+Automated dynamic analysis android Drozer
+
+Static analysis
+    Use **http://jd.benow.ca/** to decompile to APK classes. Read the code to understand what libraries it uses, how communication is handled and obvious flaws.
+
+    Automated open source tools android static analysis:
+        QARK
+        Androbugs
+        JAADAS
+Network traffic
+    Intercept requests using Burp
+
+Data storage
+    Encrypted?
+
+
+
+IOS Security
+
+    Secure Boot Chain
+
+        The boot loading mechanism works as follows. First, instructions from read only boot room are executed, they bootstrap the system. It contains the public key of apple's ca. Verifies and launches the low level boot loader. The low level boot loader launches a second stage, called iBoot. Then the device boots the kernel or recovery mode.
+
+        ROM -> LLB -> iBoot -> IOS kernel
+
+        ROM is read only data, contains the Apple CA public key and code to load the LLB
+
+        Low level Boot Loader loads the IBoot
+
+        The Iboot loads the kernel
+
+
+    Secure Enclave
+
+        Co-processor, has its own secure boot and handles crypto, key management, touch ID, etc..
+
+        Does not rely on the kernel. If the device is jailbroken, this coprocessor still works can not be trampered.
+
+    Code Singing
+
+        Signature of apps is verified and have to be signed by Apple CCA. Attacking chain of trust is how jailbreaks work. Best ones attack rom, which can not be patched.
+
+
+    Process Level SandBoxing
+
+        Unique directories at kernel level are assigned to each process.
+        Permissions for microphone, agenda, etc.. must be granted.
+
+    Data at rest Encryption
+
+        The filesystem is encrypted with AES using hardware.
+
+        Individual files can also be encrypted with a key derived from a pass code.
+
+        When the filesystem is wiped, the key is removed and nothing more.
+
+
+    Exploit Mitigation
+
+        ALSR, apps addresses is randomised at execution time. Shared libraries addresses is randomized at at boot time.
+
+        Write or Execute Memory: writable memory is not executable (xn), executable memory is not writable. Only apps that have been signed with apple own code signing entitlement can have memory with write and execution permissions. This is why safari works better than chrome in IOS.
+
+        Every heap and stack app is not executable by default.
+
+        Mandatory singing of apps.
+
+        Mandatory access control (mac) is apples sandbox. Manages mostly file system access with more flexibility for network, resources, etc...
+
+
+    File Crypto
+        iOS has full disk encryption and additionally offers and api for encrypting directories for apps.
+
+
+        Per file encryption, each key managed by secure enclabe, uses PBKDF2
+
+    Jailbreak detection
+        It is used by apps to detect devices that can run unsigned code, and therefore are less trusted.
+        - fork popen, look at exit code. Function calls are prevented by the sandbox.
+        - Read a file path outside the sandbox, it should fail if non-jailbroken
+        - Run unsigned code, or count loaded shared libraries.
+
+    Bypassing apple apps store review:
+        - running rogue JavaScript, serve malicious JavaScript after the app has passed the review.
+        - If a bug is found in iOS in the memory layout and app can use dynamic patching to overwrite memory with data not signed by apple and execute it
+
+
+    Automatic reference counting
+        Objective c inserts at compile time reference increase and decrease to know when an object can be freed from memory. But the programmer can still use Malloc free cfretain crrelease
+
+    App file system layout
+
+        App bundle is
+        - app name
+        - Documents
+        - Library
+        - - app support
+        - - cookies
+        - - preferences
+        - - Caches
+        - - Saved app state
+        - Tmp
+
+        Configuration files are stored in plist files that can be xml of binary. Might contain sensitive data. $ plutil -convert changes one format to another
+
+        The applications can share data with other apps by writing to the shared directory
+
+    Security testing
+
+        See all files in Finder:
+
+        defaults write NSGlobalDomain AppleShowAllExtensions -book true
+        chflags nohidden ~/Library
+
+        You might wanna use two devices for testing one jailbroken to easily inspect the file system and one without to have all the security features
+
+        The iOS simulator for Xcode does not run iOS it is just a simulator, so it lacks some features such as SMS and cellular camera libraries are slightly different...
+
+        First step to test an iOS app is to run it through a proxy and inspect traffic such as. Burp
+
+        You should install the PortSwigger ca to the preference store to make the mint work
+
+        On an iOS device you can go to settings network proxy and set the config
+
+Analyzing Android Apps
+
+    Android development kit (SDK)
+
+    *$ android avd # create virtual device*
+    *$ emulator -adv kitkat # start virtual device*
+    *$ adb devices # list devices*
+
+    BusyBox
+
+        App for Android, requires root, linux tools
+
+    Drozer
+
+        Assessment tool, finds known bugs and new ones.
+
+Attacking Android Apps
+
+    Intent: Data object that defines a task to be perfomed
+
+    Activity Graphical interface of app for users
+
+Install app
+    adb install diva-beta.apk
+
+
+Decompile classes
+    First get the jar:
+    *$ sh dex2jar.sh diva-beta.apk
+dex2jar diva-beta.apk -> diva-beta_dex2jar.jar*
+    You can use **JD-GUI** to decompile the classes
+
+Getting AndroidManifest.xml and smali code
+    *$ java -jar apktool_2.0.3.jar d diva-beta.apk -o output8*
+
+Manual test
+    Test the app and check the output of the command:
+    *$ adb logcat*
+    It will show written files, activities, etc..
+
+Inspecting the system
+    You can run the following command to inspect the files created by the app:
+    *$ adb shell
+    > cd /data/data/*
+    Copying files
+    *$ adb pull file*
+    Reading DBs:
+    *$ sqlite3 ids2*
+
+Intend
+
+
+WebView
+    Main classes WebChromeClient WebViewClient
+    Native component provided by the operating system to be able to load web content and interact with the OS. Browser on steroids.
+    connection hijacking, XSS
+    Same Origin Policy (SOP) bypass can lead to device file-system access.
+
+
+Threat modeling
+    Microsoft Threat Modelling (DFDs and STRIDE_
+    Attack trees
+    Cigital Threat Modelling: Assets, Threat Agents, Controls modelled directly,  Component Diagram
+
+
+
+Mobile course
+    Unencrypted sensitive data
+
+
+Types of apps
+    Mobile-aware web site
+        Just a normal web site using file upload, gps. Test as a normal app
+    WebView app
+        Can run some Java/objective c. Can access data store of OS
+
+    Hybrid /framework-based app
+    Full native code app
+        Developing / debugging is like working on a desktop app
+    Real binaries, debuggers
+    Simulators for devices you don’t have
+
+
+Android testing env
+    SDK + phone + USB SDK + System Image
+    Create an Android Virtual Device
+
+IOs
+    XCode

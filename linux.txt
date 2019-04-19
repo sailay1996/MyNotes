@@ -1,0 +1,67 @@
+*Linux*
+
+Crontab
+    Sytanx:
+    *minute hour day-month month day-week CMD*
+    1 \* \* \* \* $ cmd # runs every minute
+
+Extracting archives
+    *$ tar xvfj test.tar.bz2*
+    *$ tar zxvf test.tar.gz*
+    *$ tar zxvf test.tar*
+    *$ gzip -d test.gz*
+    *$ unzip test.zip*
+    *$ zcat rockyou.txt.gz > rockyou.txt*
+
+Compressing archives
+    *$ tar -zcvf test.tar test*
+    *$ gzip test*
+    *$ zip -9 test.zip test*
+    *$ zip -r test.zip test/*
+
+
+Copy files remotely
+    *$ scp /path/to/local/file.txt user@targetIP:/path/to/share # local to remote*
+    *$ scp -r user@targetIP:/path/to/share /local/share # remote to local*
+    *$ cat ~/.ssh/id_rsa.pub | ssh user@targetIP 'cat >> .ssh/authorized_keys'*
+
+File Permissions
+    t rwx rwx rwx     type / owner / group / world
+    Type is directory (d) or file (-).
+
+    read    (r)     4
+    write   (w)     2
+    execute (e)     1
+
+    chmod 755 test.sh                  Make a file executable
+    find . -name "*.php" -type f -exec chmod 755 {} \;
+
+Finding Files
+    Update the database of file names on the system
+    *$ updatedb*
+    Reads the database and shows the location of a file
+    *$ locate file*
+    Show the path where the app is executed from
+    *$ which app*
+    Show all the files that start with sbd
+    *$ find / -name sbd**
+    Show all world readable directories
+    *$ find / -perm -o+w -type d*
+    Show all world executable directories
+    *$ find / -perm -o+e -type d*
+
+Searching within files
+    Search for the pattern xxx in a fil
+    *$ grep xxx file*
+    Search recursively for a pattern in a director
+    *$ grep -r*
+    Search for a pattern in a zip fil
+    *$ zgrep*
+
+Troubleshoot broken dependencies
+    Show referenced shared libraries and its resolution
+    *$ ldd binary*
+
+Others
+    Import CA in java store
+    *sudo keytool -import -alias foo -trustcacerts -keystore cacerts -file cacert.der*

@@ -1,0 +1,259 @@
+*Risk analysis*
+
+Terminology
+    **Asset** is valuable resources for the business to protect.
+    **Threat** is an action or inaction that could cause harmful occurrence to assets (accidental or deliberate).
+    **Threat agents** intentionally exploit vulnerabilities.
+    **Threat events** are accidental exploitations of vulnerabilities (fire, earthquake).
+    **Impact** is the result of having a vulnerability exploited by a threat.
+    **Risk** is the possibility that a threat will exploit a vulnerability to cause harm to an asset.
+    **Exposure** is being susceptible to asset loss due to a threat; there is the possibility that a vulnerability can or will be exploited by a threat agent or event.
+    **Safeguard/countermeasure** is anything that removes a vulnerability or protects against one or more specific threats.
+    **Attack** is the exploitation of a vulnerability by a threat agent.
+    **Breach** is the occurrence of a security mechanism being bypassed or thwarted by a threat agent.
+    **Vulnerability** is a weakness that allows a threat to cause harm or to gain access to an asset.
+    **Exploit** program/script used to exploit a vulnerability and compromise an asset
+    **Risk** impact resulting from compromising an asset
+    **Risk =Threat * Vulnerability * Impact**
+    **Vulnerabiliy assessment** Process of finding all the vulnerabilities
+    **Penetration test** exploit all the vulnerabilities
+    **Non-repudiation** It means a user cannot deny (repudiate) having performed a transaction. It combines authentication and integrity: non-repudiation authenticates the identity of a user who performs a transaction, and ensures the integrity of that transaction
+
+Risk analysis models
+    CIA (Confidentiality, Integrity, Availability)
+    Disclosure Alteration and Destruction (DAD) is its opposite.
+
+    Identity and Authentication, Authorization, and Accountability
+        **Identity and Authentication** Proving an identity claim
+        **Authorization** Describes the actions you can perform on a system once you have identified and authenticated.
+        **Accountability** holds users accountable for their actions. This is typically done by logging and analyzing audit data.
+
+
+Security Design Principles
+    (My security keeps failing during annual degree exams, lol)
+    **Minimize attack surface area**: Remove unnecessary functionality or make it work authenticated users are possible reductions.
+
+    **Separation of duties**: To control fraud; Who requests a computer can not sign having received it; I.e. administrators of a shop should not be users who can buy.
+
+    **Keep security simple**: avoid double negatives and complex architectures when simple and faster approaches work.
+
+    **Fail securely**: If unexpected events occur the application should make sure security can not be bypassed.
+
+    **Defense in depth**:  applies multiple safeguards (also called controls: measures taken to reduce risk) to protect an asset. Any one security control may fail; by deploying multiple controls, you improve the confidentiality, integrity, and availability of your data. Avoid single point of failure.
+
+    **Fix security issues correctly**: Make sure the root cause is identified and the correct fix applied; Similar bugs can be across the company's products.
+
+    **Avoid security by obscurity**: nearly always fails when it is the only control. Do not hardcoded passwords etc..
+
+    **Don't trust services**: If you integrate with third party services you increase your attack surface and your security is as bad as theirs.
+
+    **Security by default**: Enable security controls by default, require strong password but user might change it for an insecure one if they want.
+
+    **Least privilege**: Users should be granted the minimum amount of access (authorization) required to do their jobs, but no more.
+
+    **Use patterns**: Each bug should be fixed introducing a pattern (template approach) so that it does not happen again.
+
+    **Trust on first use (TOFU)** is a security model used by client software which needs to establish a trust relationship with an unknown or not-yet-trusted endpoint. In a TOFU model, the client will try to look up the identifier, usually some kind of public key, in its local trust database. (certificate pinning, ssh fingerprints).
+
+Threat modeling
+    Think about attackers or the assets you want to protect
+    What are you building?  What can go wrong?
+
+    Step 1: Decompose the application into use-cases (DFD) of how the application interacts with external entities to understand attack surface.
+    Step 2: Determine and rank threats to those DFD, using STRIDE or Attack trees, etc..
+    Step 3: Determine countermeasures and mitigation
+
+    DREAD is a classification scheme for quantifying, comparing and prioritizing the amount of risk presented by each evaluated threat. The DREAD acronym is formed from the first letter of each category below.
+
+    DREAD modeling influences the thinking behind setting the risk rating, and is also used directly to sort the risks. The DREAD algorithm, shown below, is used to compute a risk value, which is an average of all five categories.
+
+    Risk_DREAD = (DAMAGE + REPRODUCIBILITY + EXPLOITABILITY + AFFECTED USERS + DISCOVERABILITY) / 5
+
+    To understand the practical risks to a system, you might model threats by considering the following:
+        Individual system components: Exploitable vulnerabilities can exist within infrastructure (e.g., hypervisors, software switches, storage nodes, and load balancers), operating systems, server software, client applications, and end users themselves
+
+        Goals of the attacker: Data exposure or modification, Elevation of privilege, Arbitrary code execution
+        Denial of service
+        Exposed system components (the available attack surface) remote access / physical access
+        Economic cost and feasibility of each attack vector
+
+    Data flow diagrams, showing how data moves through the system
+    Draw trust boundaries [browser] - [web server] - [db]
+
+STRIDE
+    **Spoofing of user identity** Fixed with authentication
+        For computers IPSec, DNSSEC, TLS, SSH host keys, Kerberos authentication, HTTP Digest or Basic authentication, "Windows authentication" (NTLM), PKI systems, such as SSL or TLS with certificates
+        For data: Digital signatures, Hashes.
+        For people: Something you know (password), something you are (biometrics), something you have (auth key card)
+        For maintaining authentication: cookies.
+    **Tampering** Fixed with integrity
+        For files: ACLs or permissions, Digital signatures, Hashes, Windows Mandatory Integrity Control (MIC) feature, Unix immutable bits
+        For network traffic: SSL, SSH, IPSec, Digital signatures
+    **Repudiation** Fixed with non-repudiation: Logging, Log analysis tools, Secured log storage, Digital signatures, Secure time stamps, Trusted third parties, Hash trees, and tools for preventing 3rd party frauds (Validation services, Proprietary data/customer history, Multi-merchant data, Purchase device tracing).
+    **Information disclosure** Fixed with confidentiality
+        For files: ACLs/permissions, Encryption, Appropriate key management
+        Network data: Encryption, Appropriate key management
+        Protecting communication headers or the fact of communication: Mix networks, Onion routing, Steganography
+    **Denial of service** Fixed with availability: ACLs, Filters, Quotas (rate limiting, thresholding, throttling), High-availability design, Extra bandwidth (rate limiting, throttling), Cloud service.
+    **Elevation of privilege** Fixed with authorization:  ACLs, Group or role membership, Role based access control, Claims-based access control, Windows privileges (runas), Unix sudo, Chroot, AppArmor or other unix sandboxes,
+
+Mitigating Privacy Threats
+    **Minimization** Do not store it, do not send it, dispose the data, do not touch it unless you have to.
+    **Cryptography** hashing or encrypting, split keys systems (multiple keys hold by multiple parties to decrypt), blinding (cryptography technique that allows a party to use a service without the service owner knowing about the input or output even if they have the key or are the CA (used for e-voting etc...)
+
+Risk Choices
+    Accept
+    Mitigate
+    Transfer (insurance)
+    Avoiding the risk (not do the project or change the design)
+
+
+Quantitative and Qualitative Risk Analysis
+    Quantitative Risk Analysis uses hard metrics, such as dollars.
+    Qualitative Risk Analysis uses simple approximate values.
+    Calculating the Annualized Loss Expectancy (ALE) is an example of Quantitative
+Risk Analysis.
+
+NIST risk management process
+    System Characterization
+    Threat Identification
+    Vulnerability Identification
+    Control Analysis
+    Likelihood Determination
+    Impact Analysis
+    Risk Determination
+    Control Recommendations
+    Results Documentation
+
+Access control defensive categories and types
+    Preventive
+    Detective
+    Corrective
+    Recovery
+    Deterrent ("beware of dog")
+    Compensating
+
+Authentication Methods
+    Something you **Know** (Passwords)
+    Something you **Have** (Synchronous Dynamic Token, Asynchronous Dynamic Token)
+    Something you **Are** (Biometric Fairness, Psychological Comfort, and Safety, Biometric Enrollment and Throughput)
+
+Defense models
+    Lollipop model: Perimeter security, protecting the assets
+    Onion model: Defense in depth, multiple layers of defenses (encryption, access control, compartmentalisation, monitoring...)
+    Zones of trust: Segregating computers in different networks according to the trust (dev deparment, office, wifi...)
+
+
+Risk management life cycle
+    Monitor
+    Identify
+    Analyse
+    Treat
+    (repeat)
+
+Treating risk
+    Mitigate
+    Accept
+    Reduce
+    Transfer
+
+
+Security incident management
+    Reporting
+    Investigation
+    Assessment
+    Corrective action
+    Employees need security training and awareness
+
+Incident response process
+    Identification of the Incident
+    Logging it (Details)
+    Investigation and root cause analysis (RCA)
+    Escalation or keeping the senior management/parties informed
+    Remediation steps
+    Closure report
+
+Data must be secure when it is
+    At Rest
+    in Transit
+    in Use
+
+
+Securing a network
+    The company needs a security policy (not plugging phone to computer, password length, etc)
+    Non-repudiation and accountability: users in the organization can not deny actions carried out and are responsible for those.
+    Every job has different responsabilities, duties and access rights.
+    Partitioning network in VLANs
+    Firewall filter all ports not needed from outside
+    Encrypted traffic
+    Monitoring and detection (IDS, IPS) such as SNORT
+    Network usage policy
+    Authentication and authorization policies
+    Segment the network into zones of trust and place systems into those zones based their communication needs and Internet exposure.
+    Run each service in a different box (or virtual box) (db and web)
+    Use a fronted proxy such as cloudflare to mitigate DDOS.
+
+Securing a box
+    Password protect the boot process before the OS loads (set is BIOS) (important for laptops)
+    Password protect CMOS settings
+    Disable booting from USB/CD
+    Reduce the attack surface of systems by turning off unneeded services.
+    Install secure software.
+    Setup your IPTABLES/firewall
+    Use an Antivirus Scanner (with Real-Time Scanning)
+    Full disk encryption
+    SSH with PKI login only, unique per machine per user.
+    Configure software settings securely.
+    Keep software and OS updated
+    Strengthen authentication processes.
+    Limit the number (and privileges) of administrators.
+    Least privilege principle for daemons
+    Install fail2ban and monitor daily logs
+    review code running or pentest it.
+    web server: security headers (X-Content-Type-Optionsno sniff, X-Frame-Options: DENY, Strict-Transport-Security Cache-Control: no-cache, no-store)
+    Remove versions from banners (security by obscurity)
+    SELinux with enforcing poly, restricts how apps can interact with kernel, for example file system objects are identified by path name rather tha inode, to prevent symlink attacks to files that would not normally be accessabke
+    Disable USB usage
+    Lock screen
+
+
+Software development lifecycle
+    Use of certified products and systems
+    Code review, vuln assessment, continuous testing methodologies
+    Separation of development and live systems
+    Use of escrow to reduce risks of loss of source code
+
+Calculating Annualized Loss Expectancy
+
+    **Annualized Loss Expectancy (ALE)** calculation allows you to determine the
+    annual cost of a loss due to a risk. Once calculated, ALE allows you to make
+    informed decisions to mitigate the risk.
+
+    **Asset value (AV)** is the value of the asset you are trying to protect. In this
+    example, each laptop costs $2500
+
+
+    The **Exposure Factor (EF)** is the percentage of value an asset lost due to an incident.
+    In the case of a stolen laptop with unencrypted PII, the Exposure Factor is
+    100%:
+
+    The **Single Loss Expectancy (SLE)** is the cost of a single loss. SLE is the Asset
+    Value (AV) times the Exposure Factor (EF). In our case, SLE is $25,000 (Asset
+    Value) times 100% (Exposure Factor), or $25,000.
+
+    The **Annual Rate of Occurrence (ARO)** is the number of losses you suffer per year.
+    Looking through past events, you discover that you have suffered 11 lost or stolen
+    laptops per year on average. Your ARO is 11.
+
+    The **Annualized Loss Expectancy (ALE)** is your yearly cost due to a risk. It is calculated
+    by multiplying the Single Loss Expectancy (SLE) times the Annual Rate of
+    Occurrence (ARO). In our case, it is $25,000 (SLE) times 11 (ARO), or $275,000.
+
+    The **Total Cost of Ownership (TCO)** is the total cost of a mitigating safeguard.
+
+
+    **Return on Investment (ROI)** is the amount of money saved by implementing a
+    safeguard. If your annual Total Cost of Ownership (TCO) is less than your Annualized
+    Loss Expectancy (ALE), you have a positive ROI (and have made a good
+    choice). If the TCO is higher than your ALE, you have made a poor choice
+

@@ -1,0 +1,23 @@
+*git*
+git
+    Rebase prevents merge commits
+    *$ git pull --rebase*
+    *$ git stash; git stash pop*
+    Resets last commit in local repo and remote
+    *$ git reset HEAD^; git push -f*
+    Aborts merge status
+    *$ git merge --abort*
+    Sets head to origin after diverged paths and unstages files
+    *$ git reset --hard origin*
+    Keeps indexes
+    *$ git reset --soft origin*
+    Delete a branch
+    *$ git branch -D branch_name*
+    Checkout a specific revision to new branch
+    *$ git checkout -b branch_name revision_id*
+    Push a revision to branch
+    *$ git push -f origin branch_name*
+    List remotes
+    *$ git remote -v*
+
+
